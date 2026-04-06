@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: rgb(255, 193, 127);
+            margin-top: 50px;
+        }
+
+        .chatbox {
+            width: 350px;
+            height: 500px;
+            background-color: blanchedalmond;
+            margin: 50px auto;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px grey;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background-color: orange;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        .chat-area {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-area div {
+            background: white;
+            padding: 6px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: left;
+        }
+
+        .chat-footer {
+            display: flex;
+            padding: 8px;
+            background-color: white;
+        }
+
+        .chat-footer input {
+            flex: 1;
+            padding: 8px;
+        }
+
+        button {
+            padding: 8px 12px;
+            margin-left: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: orange;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Chat with Bot 🤖</h2>
+
+<div class="chatbox">
+
+    <div class="chat-header">AI Chatbot</div>
+
+    <div class="chat-area" id="chatArea"></div>
+
+    <div class="chat-footer">
+        <input type="text" id="userInput" placeholder="Type message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+
+</div>
+
+<script>
+function sendMessage() {
+    let input = document.getElementById("userInput").value;
+    let chatArea = document.getElementById("chatArea");
+
+    if(input.trim() === "") return;
+
+    // User message
+    let userMsg = document.createElement("div");
+    userMsg.innerHTML = "You: " + input;
+    chatArea.appendChild(userMsg);
+
+    fetch("/get", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message: input })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let botMsg = document.createElement("div");
+        botMsg.innerHTML = "Bot: " + data.reply;
+        chatArea.appendChild(botMsg);
+
+        // Auto scroll bottom
+        chatArea.scrollTop = chatArea.scrollHeight;
+    });
+
+    document.getElementById("userInput").value = "";
+}
+</script>
+
+</body>
+</html>
